@@ -19,30 +19,6 @@
     become: true
     # tags: setup_firewall
     
-  # # Erlaube SSL
-  # - name: Allow https from anywhere (ufw)
-  #   ufw:
-  #     rule=allow
-  #     to_port=443
-  #     comment="allow https from anywhere"
-  #   become: true
-  #   when: env == 'prod'
-
-# loop over the given ip adresses
-
-
-# - name: Allow all access from RFC1918 networks to this host
-#   community.general.ufw:
-#     rule: allow
-#     src: '{{ item }}'
-#   loop:
-#     - 10.0.0.0/8
-#     - 172.16.0.0/12
-#     - 192.168.0.0/16
-
-
-
-
     # allow jobe_port for moodle using instances
   - name: Allow using Jobe through jobe_port from given moodle instances (ufw)
     ufw:
@@ -53,26 +29,6 @@
     loop: "{{ moodle_ips }}"
     become: true
     when: env == 'prod'
-
-  # # Erlaube SSL
-  # - name: Allow https from CAU intern (ufw)
-  #   ufw:
-  #     rule=allow
-  #     from_ip=134.245.0.0/16
-  #     to_port=443
-  #     comment="allow https from CAU intern"
-  #   become: true
-  #   when: env == 'stage' # or test
-
-  # # Erlaube SSL
-  # - name: Allow https from CAU intern (ufw)
-  #   ufw:
-  #     rule=allow
-  #     from_ip=134.245.0.0/16
-  #     to_port=443
-  #     comment="allow https from CAU intern"
-  #   become: true
-  #   when: env == 'test'
 
   # Erlaube SSH nur über VPN
   - name: Allow ssh internal (ufw)
