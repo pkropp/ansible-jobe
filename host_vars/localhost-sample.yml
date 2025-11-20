@@ -1,0 +1,15 @@
+env: dev # prod stage dev
+TZ: Europe/Berlin
+ntp_server: pool.ntp.org
+
+jobe_port: 4001
+
+# Moodle instances allowed to access Jobe over port jobe_port
+moodle_ips:
+  - 127.0.0.1/32
+
+checkmk: false # fals is default - choose true to enable checkmk firewall rule
+
+checkmk_port: 6556
+
+checkmk_ip: 127.0.0.1

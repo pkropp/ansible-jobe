@@ -1,0 +1,32 @@
+---
+- hosts: all
+  gather_facts: true
+  vars_files:
+    - host_vars/{{ansible_hostname}}.yml
+
+# Source - https://stackoverflow.com/q
+# Posted by gurbelunder, modified by community. See post 'Timeline' for change history
+# Retrieved 2025-11-20, License - CC BY-SA 4.0
+  tasks:
+    - name: Get info on docker host and list images
+      docker_host_info:
+        containers: yes
+      register: containers_to_stop
+
+    - name: 
+      debug:
+        msg: "{{containers_to_stop.containers}}"
+
+    - name: Stop running docker containers
+      docker_container:
+        name: '/jobe_elearn'
+        image: '{{ item.Image }}'
+        state: stopped
+      loop: '{{ containers_to_stop.containers }}'
+      become: true
+
+    - name: Remove existing jobe_elearn container if it exists
+      ansible.builtin.command: "docker rm -f jobe_elearn"
+      ignore_errors: true
+      become: true
+

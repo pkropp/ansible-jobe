@@ -1,0 +1,103 @@
+#-----------------------------------------------------------------
+  # ufw-Grundeinstellungen (weitere Regeln kommen unten)
+  # erstmal alles von aussen verbieten
+  - name: Enable logging (ufw)
+    ufw: logging=on
+    become: true
+
+  - name: Set allow policy for outgoing traffic (ufw)
+    ufw: policy=allow direction=outgoing
+    become: true
+
+  - name: Reset ufw rules
+    ufw: state=reset
+    become: true
+    # tags: setup_firewall
+
+  - name: Enable ufw, set deny policy for incoming traffic (ufw)
+    ufw: state=enabled policy=deny direction=incoming
+    become: true
+    # tags: setup_firewall
+    
+  # # Erlaube SSL
+  # - name: Allow https from anywhere (ufw)
+  #   ufw:
+  #     rule=allow
+  #     to_port=443
+  #     comment="allow https from anywhere"
+  #   become: true
+  #   when: env == 'prod'
+
+# loop over the given ip adresses
+
+
+# - name: Allow all access from RFC1918 networks to this host
+#   community.general.ufw:
+#     rule: allow
+#     src: '{{ item }}'
+#   loop:
+#     - 10.0.0.0/8
+#     - 172.16.0.0/12
+#     - 192.168.0.0/16
+
+
+
+
+    # allow jobe_port for moodle using instances
+  - name: Allow using Jobe through jobe_port from given moodle instances (ufw)
+    ufw:
+      rule=allow
+      from_ip={{ item }}
+      port='{{ jobe_port }}'
+      comment="allow using jobe over port 4001 from related Moodle servers"
+    loop: "{{ moodle_ips }}"
+    become: true
+    when: env == 'prod'
+
+  # # Erlaube SSL
+  # - name: Allow https from CAU intern (ufw)
+  #   ufw:
+  #     rule=allow
+  #     from_ip=134.245.0.0/16
+  #     to_port=443
+  #     comment="allow https from CAU intern"
+  #   become: true
+  #   when: env == 'stage' # or test
+
+  # # Erlaube SSL
+  # - name: Allow https from CAU intern (ufw)
+  #   ufw:
+  #     rule=allow
+  #     from_ip=134.245.0.0/16
+  #     to_port=443
+  #     comment="allow https from CAU intern"
+  #   become: true
+  #   when: env == 'test'
+
+  # Erlaube SSH nur über VPN
+  - name: Allow ssh internal (ufw)
+    ufw:
+      rule=allow
+      from_ip=134.245.0.0/16
+      to_port=22
+      comment="allow ssh in internal"
+    become: true
+
+  # Erlaube SSH nur über VPN
+  - name: Allow ssh internal
+    ufw:
+      rule=allow
+      from_ip=172.28.0.0/16
+      to_port=22
+      comment="allow ssh internal RFC"
+    become: true
+
+  # Erlaube checkmk
+  - name: Allow checkmk (ufw)
+    ufw:
+      rule=allow
+      from_ip=172.22.0.226
+      to_port={{ checkmk_port }}
+      comment="allow checkmk"
+    become: true
+    when: env == 'prod' and checkmk == true

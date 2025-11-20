@@ -1,0 +1,24 @@
+---
+- hosts: all
+  gather_facts: true
+  vars_files:
+    - host_vars/{{ansible_hostname}}.yml
+
+  pre_tasks:
+
+  tasks:
+    - name: Configure Timeserver
+      ansible.builtin.include_tasks: tasks/timeserver.yml
+
+    - name: Install docker
+      ansible.builtin.include_tasks: tasks/docker.yml
+
+    - name: Install Jobe in a Box
+      ansible.builtin.include_tasks: tasks/jobeinabox.yml
+
+    - name: Install and configure Firewall
+      ansible.builtin.include_tasks: tasks/firewall.yml
+      when: env != "dev"
+
+    - name: Install additional packages for Jobe
+      ansible.builtin.include_tasks: tasks/addons.yml

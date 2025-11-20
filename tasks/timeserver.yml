@@ -1,0 +1,24 @@
+# todo: set timeserver
+# https://www.rz.uni-osnabrueck.de/Dienste/NTP/ubuntu.htm
+- name: Change timeserver on Ubuntu
+
+  # become_user: root
+  # become_user: www-data
+  # tags: example1
+  lineinfile:
+    path: /etc/systemd/timesyncd.conf
+    # The String to Search
+    #regexp: \port =
+    regexp: "#NTP="
+    # The String to Replace
+    line: "NTP={{ ntp_server }}"
+    state: present
+    #backup: yes
+  # when: env != 'prod'
+  become: true
+
+
+- name: Set timezone
+  become: true
+  community.general.timezone:
+    name: "{{ TZ }}"

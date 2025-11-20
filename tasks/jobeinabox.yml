@@ -1,0 +1,28 @@
+- name: Clone Github repository
+  ansible.builtin.git:
+    repo: "https://github.com/trampgeek/jobeinabox.git"
+    # dest: "{{ app_root }}"
+    dest: "./jobeinabox"
+    version: "master"
+    force: true
+  become: true
+
+- name: Build jobeinabox Docker image
+  ansible.builtin.command:
+    cmd: "docker build . -t jobeinabox_elearn --build-arg TZ='{{ TZ }}'"
+    chdir: "./jobeinabox"
+  become: true
+
+- name: Run jobeinabox Docker container
+  ansible.builtin.command:
+    cmd: "docker run -d -p {{ jobe_port }}:80 --name jobe_elearn jobeinabox_elearn"
+    chdir: "./jobeinabox"
+  become: true
+  ignore_errors: true
+
+- name: Set jobe to restart always
+  ansible.builtin.command:
+    cmd: "docker update --restart always jobe_elearn"
+    chdir: "./jobeinabox"
+  become: true
+  ignore_errors: true
